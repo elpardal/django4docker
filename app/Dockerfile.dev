@@ -1,0 +1,22 @@
+FROM python:3.11.4-slim-buster
+
+WORKDIR /usr/src/app
+
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+# DEPENDENCIAS
+COPY ./requirements.txt .
+COPY ./entrypoint.dev.sh .
+RUN apt-get update && \
+    apt-get install -y netcat && \
+    pip install --upgrade pip && \
+    pip install -r requirements.txt && \
+    sed -i 's/\r$//g' /usr/src/app/entrypoint.dev.sh && \
+    chmod +x /usr/src/app/entrypoint.dev.sh
+
+# copia o projeto pro container
+COPY . .
+
+# ruexecuta o entrypoint.dev.sh
+ENTRYPOINT ["/usr/src/app/entrypoint.dev.sh"]
